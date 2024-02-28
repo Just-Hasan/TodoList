@@ -22,3 +22,14 @@ body {
   font-weight: 400;
   color: #555;
 }
+
+/* Swal Styles */
+.swal2-popup {
+  font-size: 1.4rem;
+}
+
+@media screen and (width < 500px) {
+  .swal2-popup {
+    font-size: 1rem;
+  }
+}

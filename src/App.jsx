@@ -2,6 +2,7 @@ import React, { useEffect, useReducer, useContext } from "react";
 import { v4 as RandomID } from "uuid";
 import Todo from "./Components/Todo";
 import "./App.css";
+import Swal from "sweetalert2";
 
 const REDUCER_STATE = {
   CHECK: "check",
@@ -12,9 +13,11 @@ const REDUCER_STATE = {
   EDIT_TODO: "edit_todo",
   EDIT_TODO_VALUE: "edit_todo_value",
   SORT: "sort",
+  CLEAR: "clear",
 };
 
 const TodoContext = React.createContext();
+
 export function useTodo() {
   return useContext(TodoContext);
 }
@@ -42,11 +45,14 @@ function reducer(state, action) {
         todo.id === action.payload ? { ...todo, check: !todo.check } : todo
       );
       return { ...state, todos: [...updateState] };
+    //
     case REDUCER_STATE.NEW_TODO:
       if (action.payload.text === "") return state;
       return { ...state, todos: [action.payload, ...state.todos], newTodo: "" };
+    //
     case REDUCER_STATE.NEW_TODO_VALUE:
       return { ...state, newTodo: action.payload };
+    //
     case REDUCER_STATE.TOGGLE_EDIT:
       updateState = state.todos.map((todo) => {
         return todo.id === action.payload
@@ -54,8 +60,10 @@ function reducer(state, action) {
           : { ...todo, edit: false };
       });
       return { ...state, todos: [...updateState], editTodo: "" };
+    //
     case REDUCER_STATE.EDIT_TODO_VALUE:
       return { ...state, editTodo: action.payload };
+    //
     case REDUCER_STATE.EDIT_TODO:
       updateState = state.todos.map((todo) =>
         todo.id === action.payload
@@ -67,9 +75,11 @@ function reducer(state, action) {
           : todo
       );
       return { ...state, todos: [...updateState] };
+    //
     case REDUCER_STATE.DELETE:
       updateState = state.todos.filter((todo) => todo.id !== action.payload);
       return { ...state, todos: [...updateState] };
+    //
     case REDUCER_STATE.SORT:
       sortComplete = state.todos.slice().filter((todo) => todo.check === true);
       sortIncomplete = state.todos
@@ -90,6 +100,13 @@ function reducer(state, action) {
       console.log(sortComplete);
       console.log(sortIncomplete);
       return { ...state, todos: [...updateState], sortBy: action.payload };
+    case REDUCER_STATE.CLEAR:
+      return {
+        newTodo: "",
+        editTodo: "",
+        sortBy: "all",
+        todos: [],
+      };
     default:
       return state;
   }
@@ -107,7 +124,7 @@ export default function App() {
     reducer,
     JSON.parse(localStorage.getItem("todo")) || initialState
   );
-  const { todos } = state;
+  const { todos, sortBy } = state;
 
   useEffect(() => {
     localStorage.setItem("todo", JSON.stringify(state));
@@ -140,7 +157,22 @@ export default function App() {
     });
   }
 
-  console.log(state.todos);
+  function handleDeleteAll() {
+    if (todos.length === 0) return;
+    Swal.fire({
+      title: "Clear todo list?",
+      text: "This will delete all the todo in the list",
+      icon: "warning",
+      confirmButtonText: "Delete",
+      confirmButtonColor: "#228be6",
+      showCancelButton: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch({ type: REDUCER_STATE.CLEAR });
+        console.log("You delete the list");
+      }
+    });
+  }
 
   return (
     <div className="grid place-content-center mb-[42px]">
@@ -178,12 +210,18 @@ export default function App() {
               <option value={"completed"}>Completed</option>
               <option value={"incomplete"}>Incomplete</option>
             </select>
+            <button
+              onClick={handleDeleteAll}
+              className="text-xl font-black bg-[#caccdeff] p-4 w-max rounded-xl hover:bg-red-400 hover:text-[#f4f4f4] mobile:col-start-3  mobile:justify-self-end tablet:col-start-1 tablet:justify-self-start transition-all duration-300 ease-in-out"
+            >
+              Clear
+            </button>
           </form>
           <div className="bg-[#ebecf5ff] rounded-xl p-8 flex flex-col gap-y-4">
             <TodoContext.Provider value={todoValue}>
               {todos.length > 0
                 ? todos.map((todo) => {
-                    return <Todo key={todo.id} todo={todo} />;
+                    return <Todo key={todo.id} todo={todo} sortBy={sortBy} />;
                   })
                 : todos.length === 0 && (
                     <p className="text-2xl font-black text-center">Empty</p>

@@ -3,7 +3,7 @@ import { FaTrash } from "react-icons/fa";
 import { HiPencil } from "react-icons/hi2";
 import { useTodo } from "../App";
 import PropTypes from "prop-types";
-export default function Todo({ todo }) {
+export default function Todo({ todo, sortBy }) {
   const { dispatch, REDUCER_STATE, state } = useTodo();
 
   /* 
@@ -14,9 +14,13 @@ export default function Todo({ todo }) {
      with the edit text, the edit value will become false.
   3. But if the text is empty / "", then don't change anything
   */
+  console.log(sortBy);
   return (
     <div
-      className="bg-white text-xl p-4  rounded-lg grid grid-cols-[80fr,20fr] items-center"
+      className={`bg-white text-xl p-4  rounded-lg grid grid-cols-[80fr,20fr] items-center ${
+        todo.check && sortBy === "incomplete" ? "hidden" : "block"
+      }
+      ${!todo.check && sortBy === "completed" ? "hidden" : "block"}`}
       key={todo.id}
     >
       <div
@@ -78,7 +82,7 @@ export default function Todo({ todo }) {
             dispatch({ type: REDUCER_STATE.DELETE, payload: todo.id })
           }
         >
-          <FaTrash className="text-[18px]"></FaTrash>
+          <FaTrash className="text-[18px]" />
         </button>
         <button
           className="bg-[#ebecf5ff] rounded-md w-max p-4"
@@ -86,7 +90,7 @@ export default function Todo({ todo }) {
             dispatch({ type: REDUCER_STATE.TOGGLE_EDIT, payload: todo.id })
           }
         >
-          <HiPencil className="text-[18px]"></HiPencil>
+          <HiPencil className="text-[18px] " />
         </button>
       </div>
     </div>
@@ -95,4 +99,5 @@ export default function Todo({ todo }) {
 
 Todo.propTypes = {
   todo: PropTypes.object.isRequired,
+  sortBy: PropTypes.string.isRequired,
 };
