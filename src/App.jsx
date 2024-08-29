@@ -22,23 +22,8 @@ export function useTodo() {
   return useContext(TodoContext);
 }
 
-// function reducer(state, action) {
-//   let updateState;
-//   switch (action.type) {
-//     case REDUCER_STATE.CHECK:
-//       updateState = state.map((todo) => {
-//         return todo.id === action.payload
-//           ? { ...todo, check: !todo.check }
-//           : todo;
-//       });
-//       return [...updateState];
-//     default:
-//       break;
-//   }
-// }
-
 function reducer(state, action) {
-  let updateState, sortComplete, sortIncomplete;
+  let updateState, sortComplete, sortIncomplete, currentTodo;
   switch (action.type) {
     case REDUCER_STATE.CHECK:
       updateState = state.todos.map((todo) =>
@@ -54,12 +39,14 @@ function reducer(state, action) {
       return { ...state, newTodo: action.payload };
     //
     case REDUCER_STATE.TOGGLE_EDIT:
+      currentTodo = state.todos.find((todo) => todo.id === action.payload);
+      console.log(currentTodo);
       updateState = state.todos.map((todo) => {
         return todo.id === action.payload
           ? { ...todo, edit: !todo.edit }
           : { ...todo, edit: false };
       });
-      return { ...state, todos: [...updateState], editTodo: "" };
+      return { ...state, todos: [...updateState], editTodo: currentTodo.text };
     //
     case REDUCER_STATE.EDIT_TODO_VALUE:
       return { ...state, editTodo: action.payload };
@@ -97,8 +84,7 @@ function reducer(state, action) {
               new Date(todo2.dateAdded) - new Date(todo1.dateAdded)
           );
       }
-      console.log(sortComplete);
-      console.log(sortIncomplete);
+
       return { ...state, todos: [...updateState], sortBy: action.payload };
     case REDUCER_STATE.CLEAR:
       return {

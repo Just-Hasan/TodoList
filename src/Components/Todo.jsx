@@ -3,18 +3,10 @@ import { FaTrash } from "react-icons/fa";
 import { HiPencil } from "react-icons/hi2";
 import { useTodo } from "../App";
 import PropTypes from "prop-types";
+
 export default function Todo({ todo, sortBy }) {
   const { dispatch, REDUCER_STATE, state } = useTodo();
 
-  /* 
-  /////////////////////////////////////[LOGIC EDIT]
-  1. if the todo.edit is true, then the checkbox and the text will be turn to input field
-     with a button besides it
-  2. If the user click the button, and type some text and confirm it, the text will be replaced
-     with the edit text, the edit value will become false.
-  3. But if the text is empty / "", then don't change anything
-  */
-  console.log(sortBy);
   return (
     <div
       className={`bg-white text-xl p-4  rounded-lg grid grid-cols-[80fr,20fr] items-center ${
@@ -47,9 +39,10 @@ export default function Todo({ todo, sortBy }) {
             />
             <button
               className="bg-[#6270f0ff] text-white font-black px-4 rounded-md"
-              onClick={() =>
-                dispatch({ type: REDUCER_STATE.EDIT_TODO, payload: todo.id })
-              }
+              onClick={(e) => {
+                e.stopPropagation(); // Prevents the CHECK action from triggering
+                dispatch({ type: REDUCER_STATE.EDIT_TODO, payload: todo.id });
+              }}
             >
               Edit
             </button>
@@ -78,17 +71,19 @@ export default function Todo({ todo, sortBy }) {
       <div className="flex justify-end gap-2">
         <button
           className="bg-[#ebecf5ff] rounded-md w-max p-4"
-          onClick={() =>
-            dispatch({ type: REDUCER_STATE.DELETE, payload: todo.id })
-          }
+          onClick={(e) => {
+            e.stopPropagation(); // Prevents the CHECK action from triggering
+            dispatch({ type: REDUCER_STATE.DELETE, payload: todo.id });
+          }}
         >
           <FaTrash className="text-[18px]" />
         </button>
         <button
           className="bg-[#ebecf5ff] rounded-md w-max p-4"
-          onClick={() =>
-            dispatch({ type: REDUCER_STATE.TOGGLE_EDIT, payload: todo.id })
-          }
+          onClick={(e) => {
+            e.stopPropagation(); // Prevents the CHECK action from triggering
+            dispatch({ type: REDUCER_STATE.TOGGLE_EDIT, payload: todo.id });
+          }}
         >
           <HiPencil className="text-[18px] " />
         </button>
