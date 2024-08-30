@@ -1,8 +1,8 @@
 import { FaCheck } from "react-icons/fa6";
 import { FaTrash } from "react-icons/fa";
 import { HiPencil } from "react-icons/hi2";
-import { useTodo } from "../App";
 import PropTypes from "prop-types";
+import { useTodo } from "../hooks/useTodo";
 
 export default function Todo({ todo, sortBy }) {
   const { dispatch, REDUCER_STATE, state } = useTodo();

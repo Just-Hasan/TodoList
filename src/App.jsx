@@ -1,8 +1,8 @@
-import React, { useEffect, useReducer, useContext } from "react";
-import { v4 as RandomID } from "uuid";
-import Todo from "./Components/Todo";
-import "./App.css";
+import React, { useEffect, useReducer } from "react";
 import Swal from "sweetalert2";
+import { v4 as RandomID } from "uuid";
+import "./App.css";
+import Todo from "./Components/Todo";
 
 const REDUCER_STATE = {
   CHECK: "check",
@@ -16,11 +16,7 @@ const REDUCER_STATE = {
   CLEAR: "clear",
 };
 
-const TodoContext = React.createContext();
-
-export function useTodo() {
-  return useContext(TodoContext);
-}
+export const TodoContext = React.createContext();
 
 function reducer(state, action) {
   let updateState, sortComplete, sortIncomplete, currentTodo;
